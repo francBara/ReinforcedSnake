@@ -8,3 +8,7 @@ Monte Carlo control and evaluation were implemented from scratch using Python, r
 - Evaluation
 - Policy
 - State
+
+The game is correctly played after reaching exploration rate 0, by avoiding the tail and catching the food.
+
+Press space bar to increase FPS and learning speed.
