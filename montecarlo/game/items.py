@@ -1,8 +1,8 @@
 from random import randint
 from os import urandom
-from direction import Direction
-from grid import Grid
-from direction import ComplexDirection
+from .direction import Direction
+from .grid import Grid
+from .direction import ComplexDirection
 
 
 class Sheep:

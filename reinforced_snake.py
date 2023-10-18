@@ -1,11 +1,8 @@
 import pygame
-from direction import Direction  
-from ship_brain import Brain
-from ship_brain import State
-from ship_brain import GeneralBrain
-from os import urandom
-from grid import Grid
-from items import *
+from montecarlo.brain import Brain
+from montecarlo.state import State
+from montecarlo.game.grid import Grid
+from montecarlo.game.items import *
 from random import choices
 
 pygame.init()
@@ -41,8 +38,7 @@ grid = Grid(16, 800)
 shepperd = Shepperd(0, 5, grid)
 current_sheep = Sheep(grid.random_cell(), grid.random_cell())
 
-attack_brain = Brain(0.78)
-defense_brain = Brain(0.8)
+brain = Brain(gamma=0.78)
 
 game_over = False
 
@@ -59,7 +55,7 @@ while True:
     for event in pygame.event.get():
         if (event.type == pygame.QUIT):
             pygame.quit()
-            print(attack_brain.current_policy)
+            print(brain.current_policy)
          
         elif (event.type == pygame.KEYDOWN):
             if (event.key == pygame.K_SPACE):
@@ -89,11 +85,7 @@ while True:
         state = State(shepperd.get_sheep_direction(current_sheep), shepperd.get_queue_directions(past_positions[1:shepperd.sheeps], direction))
         if (print_state):
             print(state)
-        direction = attack_brain.choose_direction(state, direction)
-        #attack_direction = attack_brain.current_policy.get_action(State(shepperd.get_sheep_direction(current_sheep), set()), direction)
-        #defense_direction = defense_brain.current_policy.get_action(State(Direction.UP, shepperd.get_queue_directions(past_positions[3:])), direction)
-
-        
+        direction = brain.choose_direction(state, direction)
 
         
 
@@ -110,24 +102,24 @@ while True:
     if (shepperd.x_cell == current_sheep.x_cell and shepperd.y_cell == current_sheep.y_cell):
         current_sheep = Sheep(grid.random_cell(), grid.random_cell())
         shepperd.sheeps += 1
-        attack_brain.add_reward(50)
-        #attack_brain.evaluate()
+        brain.add_reward(50)
+        #brain.evaluate()
     else:
-        attack_brain.add_reward(-1)
+        brain.add_reward(-1)
 
     for i in range(shepperd.sheeps):
         if ((shepperd.x_cell, shepperd.y_cell) == past_positions[i]):
             shepperd = Shepperd(0, 5, grid)
             current_sheep = Sheep(grid.random_cell(), grid.random_cell())
-            attack_brain.add_reward(-300)
-            attack_brain.evaluate()
+            brain.add_reward(-300)
+            brain.evaluate()
             break
 
     
     past_positions.insert(0, (shepperd.x_cell, shepperd.y_cell))
 
     if (print_policy):
-        print(attack_brain.current_policy)
+        print(brain.current_policy)
 
 
     canvas.fill((255, 255, 255))
